@@ -1,0 +1,2 @@
+sh distributed_train.sh	1 --dataset cifar10 	/path_to/CIFAR10-images/     --train-split /path_to/CIFAR10-images/train	--val-split /path_to/CIFAR10-images/test	 --model convmixer_256_16_dcls	-b 128	-j 1     --opt adamw     --epochs 200	--amp     --input-size 3 32 32   --lr 0.01          --num-classes 10     --warmup-epochs 0  --weight-decay 0.01  --opt-eps 1e-3 --sched onecycle    --clip-grad 1.0 --scale 0.75 1.0 --mean 0.4914 0.4822 0.4465 --std 0.2471 0.2435 0.261  --aa rand-m9-mstd0.5-inc1     --cutmix 0.5     --mixup 0.5     --reprob 0.25     --remode pixel 
+

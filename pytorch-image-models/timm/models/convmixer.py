@@ -1,11 +1,12 @@
 import sys
-sys.path.append('../../../')
+
 import torch.nn as nn
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from timm.models.registry import register_model
 from DCLS.construct.modules.Dcls import  Dcls2d as cDcls2d
 import math
 import torch
+
 
 _cfg = {
     'url': '',
@@ -22,7 +23,6 @@ class Residual(nn.Module):
 
     def forward(self, x):
         return self.fn(x) + x
-
 
 def ConvMixer(dim, depth, kernel_size=9, dilation=1, patch_size=7, n_classes=1000):
     return nn.Sequential(
@@ -44,6 +44,7 @@ def ConvMixer(dim, depth, kernel_size=9, dilation=1, patch_size=7, n_classes=100
         nn.Linear(dim, n_classes)
     )
 
+
 def ConvMixerDcls(dim, depth, kernel_count=3, dilated_kernel_size=9, scaling=1, dcls_sync=False, groups=256, patch_size=7, n_classes=1000):
     model = nn.Sequential(
         nn.Conv2d(3, dim, kernel_size=patch_size, stride=patch_size),
@@ -64,7 +65,7 @@ def ConvMixerDcls(dim, depth, kernel_count=3, dilated_kernel_size=9, scaling=1, 
         nn.Flatten(),
         nn.Linear(dim, n_classes)
     )
-    
+
     if dcls_sync:
         P = torch.Tensor(2, dim, dim // groups, kernel_count) 
         with torch.no_grad():

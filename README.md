@@ -32,6 +32,15 @@ We provide some model weights below:
 |[ConvMixer-768/32](https://github.com/tmp-iclr/convmixer/releases/download/v1.0/convmixer_768_32_ks7_p7_relu.pth.tar)\*| 7 | 7 | 85MB |
 |[ConvMixer-1024/20](https://github.com/tmp-iclr/convmixer/releases/download/v1.0/convmixer_1024_20_ks9_p14.pth.tar)| 9 | 14 | 98MB |
 
+#### Evaluation on CIFAR-10
+| Model Name | Kernel Size | Dilation Size | Patch Size | File Size |
+|------------|:-----------:|:----------:|:----------:|:----------:|
+|[ConvMixer-256/16_7x7](https://drive.google.com/file/d/1rx6vRzefTpaZh51bnI3EZFzyznHz9Hut/view?usp=sharing)| 7 | 1 | 1 | 14,8MB |
+|[ConvMixer-256/16_3x3](https://drive.google.com/file/d/1aBKTgxUkMLkhLV4dHZetIHKNeiVov6Yi/view?usp=sharing)| 3 | 1 | 1 | 13MB |
+|[ConvMixer-256/16_3x3_dilated](https://drive.google.com/file/d/1OT6YCDbUBbdjPcuAC5Fft8fxarPkra2k/view?usp=sharing)| 3 | 3 | 1 | 13MB |
+|[ConvMixer-256/16_3x3_dcls](https://drive.google.com/file/d/11IXv_Jititdw8HbZgS9IHGMSnr_bJuSV/view?usp=sharing)| 3 | 3 | 1 | 13,8MB |
+
+
 \* **Important:** ConvMixer-768/32 here uses ReLU instead of GELU, so you would have to change `convmixer.py` accordingly (we will fix this later).
 
 You can evaluate ConvMixer-1536/20 as follows:
@@ -72,6 +81,37 @@ sh distributed_train.sh 10 [/path/to/ImageNet1k]
 We also included a ConvMixer-768/32 in timm/models/convmixer.py (though it is simple to add more ConvMixers). We trained that one with the above settings but with 300 epochs instead of 150 epochs.
 
 __**Note:**__ If you are training on CIFAR-10 instead of ImageNet-1k, we recommend setting `--scale 0.75 1.0` as well, since the default value of 0.08 1.0 does not make sense for 32x32 inputs.
+
+
+#### Training with DCLS
+
+```
+sh distributed_train.sh	1 --dataset cifar10 	/path_to/CIFAR10-images/     
+--train-split /path_to/CIFAR10-images/train	
+--val-split /path_to/CIFAR10-images/test	 
+--model convmixer_256_16_dcls	
+-b 128	
+-j 1     
+--opt adamw     
+--epochs 200	
+--amp     
+--input-size 3 32 32   
+--lr 0.01          
+--num-classes 10     
+--warmup-epochs 0  
+--weight-decay 0.01  
+--opt-eps 1e-3 
+--sched onecycle    
+--clip-grad 1.0 
+--scale 0.75 1.0 
+--mean 0.4914 0.4822 0.4465 
+--std 0.2471 0.2435 0.261  
+--aa rand-m9-mstd0.5-inc1     
+--cutmix 0.5     
+--mixup 0.5     
+--reprob 0.25     
+--remode pixel 
+```
 
 The tweetable version of ConvMixer, which requires `from torch.nn import *`:
 

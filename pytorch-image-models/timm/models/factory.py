@@ -81,6 +81,7 @@ def create_model(
         model = create_fn(pretrained=pretrained, **kwargs)
 
     if checkpoint_path:
+        print("Initializing with (%s)" % checkpoint_path)
         load_checkpoint(model, checkpoint_path)
 
     return model

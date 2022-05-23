@@ -73,6 +73,7 @@ class Scheduler:
         if values is not None:
             values = self._add_noise(values, epoch)
             self.update_groups(values)
+            self.update_groups_dcls(epoch)
 
     def step_frac(self, frac_epoch: int, metric: float = None) -> None:
         self.metric = metric
@@ -80,6 +81,7 @@ class Scheduler:
         if values is not None:
             values = self._add_noise(values, frac_epoch)
             self.update_groups(values)
+            self.update_groups_dcls(frac_epoch)
 
     def step_update(self, num_updates: int, metric: float = None):
         self.metric = metric
@@ -87,12 +89,20 @@ class Scheduler:
         if values is not None:
             values = self._add_noise(values, num_updates)
             self.update_groups(values)
+            self.update_groups_dcls(num_updates)
 
     def update_groups(self, values):
         if not isinstance(values, (list, tuple)):
             values = [values] * len(self.optimizer.param_groups)
         for param_group, value in zip(self.optimizer.param_groups, values):
             param_group[self.param_group_field] = value
+            #if param_group['names'][0].endswith(".P"):
+            #    param_group['lr'] = (0.01 - value) * 5
+                
+    def update_groups_dcls(self, epoch):
+        for param_group in self.optimizer.param_groups:
+            if param_group['names'][0].endswith(".P"):
+                param_group['lr'] = 0.05*(0.98**epoch) #(0.01 - 0.0000495 * epoch) * 5              
 
     def _add_noise(self, lrs, t):
         if self.noise_range_t is not None:
